@@ -12,6 +12,8 @@ namespace CodeBase.Gameplay.Heroes
     public float MaxInitiative;
 
     public List<SkillState> SkillStates;
+    
+    public float HpPercentage => CurrentHp / MaxHp;
 
     public void ModifyInitiative(float value)
     {
