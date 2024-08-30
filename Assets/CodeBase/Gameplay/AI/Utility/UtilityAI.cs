@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CodeBase.Extensions;
+using CodeBase.Gameplay.AI.Reporting;
 using CodeBase.Gameplay.Battle;
 using CodeBase.Gameplay.Heroes;
 using CodeBase.Gameplay.HeroRegistry;
@@ -17,22 +18,33 @@ namespace CodeBase.Gameplay.AI.Utility
         private readonly ITargetPicker _targetPicker;
         private readonly IHeroRegistry _heroRegistry;
         private readonly ISkillSolver _skillSolver;
+        private readonly IAIReporter _reporter;
         private ICollection<IUtilityFunction> _utilityFunctions;
 
-        public UtilityAI(IStaticDataService staticDataService, ITargetPicker targetPicker, IHeroRegistry heroRegistry, ISkillSolver skillSolver)
-        {
+        public UtilityAI(
+            IStaticDataService staticDataService,
+            ITargetPicker targetPicker,
+            IHeroRegistry heroRegistry,
+            ISkillSolver skillSolver,
+            IAIReporter reporter)
+        { 
             _staticDataService = staticDataService;
             _targetPicker = targetPicker;
             _heroRegistry = heroRegistry;
             _skillSolver = skillSolver;
+            _reporter = reporter;
 
             _utilityFunctions = new Brains().GetUtilityFunctions();
         }
 
         public HeroAction MakeBestDecision(IHero readyHero)
         {
-            IEnumerable<ScoredAction> choices = GetScoredHeroActions(readyHero, ReadySkills(readyHero));
+            List<ScoredAction> choices = 
+                GetScoredHeroActions(readyHero, ReadySkills(readyHero))
+                    .ToList(); 
 
+            _reporter.ReportDecisionScores(readyHero, choices);
+            
             return choices.FindMax(choice => choice.Score);
         }
 
@@ -67,6 +79,8 @@ namespace CodeBase.Gameplay.AI.Utility
                     let score = utilityFunction.Score(input, hero)
                     select new ScoreFactor(utilityFunction.Name, score))
                 .ToList();
+            
+            _reporter.ReportDecisionDetails(skill, hero, scoreFactors);
 
             return scoreFactors.Select(x => x.Score)
                 .SumOrNull();

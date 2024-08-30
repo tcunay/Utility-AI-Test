@@ -10,5 +10,7 @@ namespace CodeBase.Gameplay.AI.Utility
             Name = name;
             Score = score;
         }
+
+        public override string ToString() => $"{Name} -> {(Score >= 0 ? "+" : "")}{Score}";
     }
 }

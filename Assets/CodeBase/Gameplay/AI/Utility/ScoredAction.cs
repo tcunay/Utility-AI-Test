@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using CodeBase.Extensions;
 using CodeBase.Gameplay.Battle;
 using CodeBase.Gameplay.Heroes;
+using CodeBase.StaticData.Skills;
 
 namespace CodeBase.Gameplay.AI.Utility
 {
@@ -17,5 +20,23 @@ namespace CodeBase.Gameplay.AI.Utility
             SkillKind = skill.Kind;
             Score = score; 
         }
+
+        public override string ToString()
+        {
+            string skillCategory = "other";
+
+            if (SkillKind is SkillKind.Damage) 
+                skillCategory = "dmg";
+            
+            if (SkillKind is SkillKind.Heal) 
+                skillCategory = "heal";
+            
+            if (SkillKind is SkillKind.InitiativeBurn) 
+                skillCategory = "initiative burn";
+
+            return
+                $"{skillCategory}: {Skill.ToString().ToColor("FFFF00")} targets:"+
+                $" {TargetIds.Count} score: {Score.ToString("F").ToColor("00FF00")}";
+        }   
     }
 }

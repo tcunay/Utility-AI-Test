@@ -10,7 +10,6 @@ namespace CodeBase.Gameplay.AI.Utility
     {
         private readonly Convolutions _convolutions = new()
         {
-            //{When.SkillIsDamage, GetInput.TargetHp, Score.AsIs, "Basic Damage"},
             {When.SkillIsDamage, GetInput.PercentageDamage, Score.ScaleBy(100), "Basic Damage"},
             {When.SkillIsDamage, GetInput.IsKillingBlow, Score.IfTrueThen(+150), "Killing Blow"},
             {When.SkillIsDamage, GetInput.TargetHpPercentage, Score.FocusDamage, "Focus"},
